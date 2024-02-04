@@ -1,0 +1,64 @@
+---
+
+- name: Create Prometheus persistent volume
+  containers.podman.podman_volume:
+    name: "{{ prometheus_volume_list[0] | ansible.builtin.split(':') | first }}"
+    state: present
+  register: prometheus_data_volume_result
+
+- name: Create Prometheus configuration directories
+  ansible.builtin.file:
+    dest: "{{ prometheus_data_volume_result['volume']['Mountpoint'] }}/{{ item }}"
+    state: directory
+    serole: "{{ prometheus_file_serole }}"
+    seuser: "{{ prometheus_file_seuser }}"
+    setype: "{{ prometheus_file_setype }}"
+  with_items:
+    - rules
+    - file_sd
+
+- name: Deploy Prometheus
+  containers.podman.podman_container:
+    name: "{{ prometheus_pod_name }}-prometheus"
+    image: "{{ prometheus_image_url }}"
+    volume: "{{ prometheus_volume_list }}"
+    ports: "{{ prometheus_ports_list }}"
+    healthcheck: "{{ prometheus_health_check }}"
+    pod: "{{ prometheus_pod_name }}"
+    network: "{{ prometheus_pod_name }}"
+    command: "{{ prometheus_launch_command_list | default(omit) }}"
+    state: present
+
+- name: Deploy Prometheus configuration
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: "{{ prometheus_data_volume_result['volume']['Mountpoint'] }}/prometheus.yml"
+    serole: "{{ prometheus_file_serole }}"
+    seuser: "{{ prometheus_file_seuser }}"
+    setype: "{{ prometheus_file_setype }}"
+  notify:
+    - Reload Prometheus
+
+- name: Deploy Ansible managed rules
+  ansible.builtin.template:
+    src: alerts.yml.j2
+    dest: "{{ prometheus_data_volume_result['volume']['Mountpoint'] }}/rules/ansible_managed.rules"
+    mode: 0644
+    serole: "{{ prometheus_file_serole }}"
+    seuser: "{{ prometheus_file_seuser }}"
+    setype: "{{ prometheus_file_setype }}"
+  notify:
+    - Reload Prometheus
+
+- name: Deploy custom rules
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ prometheus_data_volume_result['volume']['Mountpoint'] }}/rules/"
+    serole: "{{ prometheus_file_serole }}"
+    seuser: "{{ prometheus_file_seuser }}"
+    setype: "{{ prometheus_file_setype }}"
+    mode: "0644"
+  with_fileglob: "{{ prometheus_config_alert_rules_files }}"
+  notify:
+    - Reload Prometheus
+

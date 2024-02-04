@@ -1,0 +1,6 @@
+{{ ansible_managed | comment }}
+
+groups:
+  - name: Ansible managed alert ruleset
+    rules:
+    {{ prometheus_config_alert_rules | to_nice_yaml(indent=2,sort_keys=False) | indent(4,False) }}

@@ -1,0 +1,21 @@
+---
+# tasks file for prometheus
+
+- ansible.builtin.include_tasks: pod.yml
+  args:
+    apply:
+      tags:
+        - "role::prometheus"
+        - "role::prometheus:prepare"
+- ansible.builtin.include_tasks: prometheus.yml
+  args:
+    apply:
+      tags:
+        - "role::prometheus"
+        - "role::prometheus:deploy"
+- ansible.builtin.include_tasks: post.yml
+  args:
+    apply:
+      tags:
+        - "role::prometheus"
+        - "role::prometheus:post"

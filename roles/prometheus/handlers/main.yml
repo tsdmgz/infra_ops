@@ -1,0 +1,9 @@
+---
+# handlers file for prometheus
+
+- name: Reload Prometheus
+  ansible.builtin.uri:
+    method: POST
+    url: "http://{{ ansible_default_ipv6['address'] | default(ansible_default_ipv4['address']) }}:{{ prometheus_external_listen_port }}/-/reload"
+  listen:
+    - Reload Prometheus

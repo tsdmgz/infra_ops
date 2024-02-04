@@ -1,0 +1,22 @@
+# jinja2: trim_blocks: True, lstrip_blocks: True
+{{ ansible_managed | comment }}
+global:
+  {{ prometheus_config_global | to_nice_yaml(indent=2, sort_keys=False) | indent(2,False) }}
+
+scrape_configs:
+  {{ prometheus_config_scrape_config | to_nice_yaml(indent=2, sort_keys=False) | indent(2, false) }}
+
+{% if prometheus_config_alert_rules_files != [] %}
+rule_files:
+  - {{ __prometheus_config_dir }}/rules/*.rules
+{% endif %}
+
+{% if prometheus_config_alertmanager_config | length > 0 %}
+alerting:
+  alertmanagers:
+  {{ prometheus_config_alertmanager_config | to_nice_yaml(indent=2,sort_keys=False) | indent(2,False) }}
+  {% if prometheus_config_alert_relabel_configs | length > 0 %}
+  alert_relabel_configs:
+  {{ prometheus_config_alert_relabel_configs | to_nice_yaml(indent=2,sort_keys=False) | indent(2,False) }}
+  {% endif %}
+{% endif %}
