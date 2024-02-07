@@ -39,6 +39,17 @@
   notify:
     - Reload Prometheus
 
+- name: Deploy static targets
+  ansible.builtin.copy:
+    content: "{{ item.value | to_nice_yaml(indent=2,sort_keys=False) }}"
+    dest: "{{ prometheus_data_volume_result['volume']['Mountpoint'] }}/{{ item.key }}.yml"
+    force: true
+    serole: "{{ prometheus_file_serole }}"
+    seuser: "{{ prometheus_file_seuser }}"
+    setype: "{{ prometheus_file_setype }}"
+  with_dict: "{{ prometheus_config_scrape_targets }}"
+  when: prometheus_config_scrape_targets != {}
+
 - name: Deploy Ansible managed rules
   ansible.builtin.template:
     src: alerts.yml.j2

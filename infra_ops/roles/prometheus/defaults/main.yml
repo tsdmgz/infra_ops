@@ -28,6 +28,14 @@ prometheus_config_global:
   evaluation_interval: 15s
 
 prometheus_config_alertmanager_config: []
+
+prometheus_config_scrape_targets: {}
+#  node:
+#    - targets:
+#        - localhost:9100
+#      labels:
+#        env: test
+#
 prometheus_config_scrape_config:
   - job_name: "node"
     file_sd_configs:
