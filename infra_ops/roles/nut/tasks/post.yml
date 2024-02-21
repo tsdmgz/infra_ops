@@ -1,0 +1,20 @@
+---
+
+- name: Generate systemd unit for Network UPS Tools pod
+  containers.podman.podman_pod:
+    network: "{{ nut_pod_name }}"
+    name: "{{ nut_pod_name }}"
+    state: created
+    generate_systemd:
+      names: true
+      path: "{{ __nut_systemd_path }}"
+      restart_policy: always
+  register: nut_service_unit_generate_result
+
+- name: Run Network UPS Tools pod
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+    daemon_reload: true
+  loop: "{{ nut_service_unit_generate_result['podman_systemd'].keys() | flatten(1) }}"

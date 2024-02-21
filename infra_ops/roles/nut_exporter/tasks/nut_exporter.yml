@@ -1,0 +1,14 @@
+---
+- name: Deploy NUT exporter
+  containers.podman.podman_container:
+    name: "{{ nut_exporter_pod_name }}-nut_exporter"
+    image: "{{ nut_exporter_image_url }}"
+    volume: "{{ nut_exporter_volume_list | default(omit) }}"
+    ports: "{{ nut_exporter_ports_list | default(omit) }}"
+    healthcheck: "{{ nut_exporter_health_check | default(omit) }}"
+    pod: "{{ nut_exporter_pod_name }}"
+    network: "{{ nut_exporter_pod_name }}"
+    command: "{{ nut_exporter_launch_command_list | default(omit) }}"
+    env: "{{ nut_exporter_env_dict }}"
+    state: present
+

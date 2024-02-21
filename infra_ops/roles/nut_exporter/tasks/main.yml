@@ -1,0 +1,30 @@
+---
+# tasks file for nut_exporter
+
+- ansible.builtin.include_tasks:
+    file: pod.yml
+    apply:
+      tags:
+        - role::nut_exporter
+        - role::nut_exporter:prepare
+  tags:
+    - role::nut_exporter
+    - role::nut_exporter:prepare
+- ansible.builtin.include_tasks:
+    file: nut_exporter.yml
+    apply:
+      tags:
+        - role::nut_exporter
+        - role::nut_exporter:deploy
+  tags:
+    - role::nut_exporter
+    - role::nut_exporter:deploy
+- ansible.builtin.include_tasks:
+    file: post.yml
+    apply:
+      tags:
+        - role::nut_exporter
+        - role::nut_exporter:post
+  tags:
+    - role::nut_exporter
+    - role::nut_exporter:post

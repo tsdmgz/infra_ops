@@ -1,0 +1,13 @@
+---
+- name: Deploy Network UPS Tools
+  containers.podman.podman_container:
+    name: "{{ nut_pod_name }}-nut"
+    image: "{{ nut_image_url }}"
+    volume: "{{ nut_volume_list | default(omit) }}"
+    ports: "{{ nut_ports_list | default(omit) }}"
+    healthcheck: "{{ nut_health_check | default(omit) }}"
+    pod: "{{ nut_pod_name }}"
+    network: "{{ nut_pod_name }}"
+    command: "{{ nut_launch_command_list | default(omit) }}"
+    env: "{{ nut_env_dict }}"
+    state: present

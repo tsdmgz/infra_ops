@@ -1,0 +1,12 @@
+---
+# defaults file for nut
+
+__nut_systemd_path: /etc/systemd/system
+nut_pod_name: nut
+nut_network_ipv6: true
+nut_image_url: docker.io/instantlinux/nut-upsd:latest
+#nut_ports_list: []
+#nut_volume_list: []
+nut_env_dict: {}
+nut_volume_list:
+  - "/dev/bus/usb:/dev/bus/usb"
