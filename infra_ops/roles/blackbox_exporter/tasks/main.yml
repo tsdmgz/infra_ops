@@ -1,2 +1,29 @@
 ---
 # tasks file for blackbox_exporter
+- ansible.builtin.include_tasks: pod.yml
+  args:
+    apply:
+      tags:
+        - role::blackbox_exporter
+        - role::blackbox_exporter:prepare
+  tags:
+    - role::blackbox_exporter
+    - role::blackbox_exporter:prepare
+- ansible.builtin.include_tasks: blackbox_exporter.yml
+  args:
+    apply:
+      tags:
+        - role::blackbox_exporter
+        - role::blackbox_exporter:deploy
+  tags:
+    - role::blackbox_exporter
+    - role::blackbox_exporter:deploy
+- ansible.builtin.include_tasks: post.yml
+  args:
+    apply:
+      tags:
+        - role::blackbox_exporter
+        - role::blackbox_exporter:post
+  tags:
+    - role::blackbox_exporter
+    - role::blackbox_exporter:post

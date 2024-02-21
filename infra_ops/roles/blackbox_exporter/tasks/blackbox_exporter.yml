@@ -1,0 +1,30 @@
+---
+
+- name: Create blackbox_exporter persistent volume
+  containers.podman.podman_volume:
+    name: "{{ blackbox_exporter_volume_list[0] | ansible.builtin.split(':') | first }}"
+    state: present
+  register: blackbox_exporter_data_volume_result
+
+- name: Deploy blackbox_exporter
+  containers.podman.podman_container:
+    name: "{{ blackbox_exporter_pod_name }}-blackbox_exporter"
+    image: "{{ blackbox_exporter_image_url }}"
+    volume: "{{ blackbox_exporter_volume_list }}"
+    ports: "{{ blackbox_exporter_ports_list }}"
+    healthcheck: "{{ blackbox_exporter_health_check }}"
+    pod: "{{ blackbox_exporter_pod_name }}"
+    network: "{{ blackbox_exporter_pod_name }}"
+    command: "{{ blackbox_exporter_launch_command_list | default(omit) }}"
+    state: present
+
+- name: Deploy blackbox_exporter configuration
+  ansible.builtin.template:
+    src: blackbox_exporter.yml.j2
+    dest: "{{ blackbox_exporter_data_volume_result['volume']['Mountpoint'] }}/blackbox_exporter.yml"
+    serole: "{{ blackbox_exporter_file_serole }}"
+    seuser: "{{ blackbox_exporter_file_seuser }}"
+    setype: "{{ blackbox_exporter_file_setype }}"
+    mode: "0600"
+  notify:
+    - Reload blackbox_exporter

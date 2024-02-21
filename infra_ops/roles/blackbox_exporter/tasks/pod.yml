@@ -1,0 +1,14 @@
+---
+
+- name: Create blackbox_exporter network
+  containers.podman.podman_network:
+    disable_dns: false
+    ipv6: "{{ blackbox_exporter_network_ipv6 }}"
+    name: "{{ blackbox_exporter_pod_name }}"
+    state: present
+
+- name: Create blackbox_exporter pod
+  containers.podman.podman_pod:
+    name: "{{ blackbox_exporter_pod_name }}"
+    network: "{{ blackbox_exporter_pod_name }}"
+    state: created
