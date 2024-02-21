@@ -7,12 +7,14 @@
     state: created
     generate_systemd:
       names: true
-      path: /etc/systemd/system
+      path: "{{ __prometheus_systemd_path }}"
       restart_policy: always
+  register: prometheus_service_unit_generate_result
 
 - name: Run Prometheus pod
   ansible.builtin.service:
-    name: "pod-{{ prometheus_pod_name }}"
+    name: "{{ item }}"
     state: started
     enabled: true
     daemon_reload: true
+  loop: "{{ prometheus_service_unit_generate_result['podman_systemd'].keys() | flatten(1) }}"

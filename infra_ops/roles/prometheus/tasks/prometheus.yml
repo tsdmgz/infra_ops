@@ -42,7 +42,7 @@
 - name: Deploy static targets
   ansible.builtin.copy:
     content: "{{ item.value | to_nice_yaml(indent=2,sort_keys=False) }}"
-    dest: "{{ prometheus_data_volume_result['volume']['Mountpoint'] }}/{{ item.key }}.yml"
+    dest: "{{ prometheus_data_volume_result['volume']['Mountpoint'] }}/file_sd/{{ item.key }}.yml"
     force: true
     serole: "{{ prometheus_file_serole }}"
     seuser: "{{ prometheus_file_seuser }}"

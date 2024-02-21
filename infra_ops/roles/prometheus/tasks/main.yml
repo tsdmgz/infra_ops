@@ -1,21 +1,30 @@
 ---
 # tasks file for prometheus
 
-- ansible.builtin.include_tasks: pod.yml
-  args:
+- ansible.builtin.include_tasks:
+    file: pod.yml
     apply:
       tags:
-        - "role::prometheus"
-        - "role::prometheus:prepare"
-- ansible.builtin.include_tasks: prometheus.yml
-  args:
+        - role::prometheus
+        - role::prometheus:prepare
+  tags:
+    - role::prometheus
+    - role::prometheus:prepare
+- ansible.builtin.include_tasks:
+    file: prometheus.yml
     apply:
       tags:
-        - "role::prometheus"
-        - "role::prometheus:deploy"
-- ansible.builtin.include_tasks: post.yml
-  args:
+        - role::prometheus
+        - role::prometheus:deploy
+  tags:
+    - role::prometheus
+    - role::prometheus:deploy
+- ansible.builtin.include_tasks:
+    file: post.yml
     apply:
       tags:
-        - "role::prometheus"
-        - "role::prometheus:post"
+        - role::prometheus
+        - role::prometheus:post
+  tags:
+    - role::prometheus
+    - role::prometheus:post

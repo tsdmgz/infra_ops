@@ -2,6 +2,7 @@
 # defaults file for prometheus
 
 __prometheus_config_dir: /etc/prometheus
+__prometheus_systemd_path: /etc/systemd/system
 
 prometheus_pod_name: prometheus
 prometheus_network_ipv6: true
