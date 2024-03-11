@@ -1,0 +1,15 @@
+---
+# defaults file for grafana
+
+__grafana_systemd_path: /etc/systemd/system
+grafana_pod_name: grafana
+grafana_network_ipv6: true
+grafana_image_url: docker.io/grafana/grafana:latest
+grafana_health_check: "wget -O - -S -T 2 http://localhost:{{ grafana_internal_listen_port }}"
+grafana_internal_listen_port: 3000
+grafana_external_listen_port: "{{ grafana_internal_listen_port }}"
+grafana_ports_list:
+  - "{{ grafana_internal_listen_port }}:{{ grafana_external_listen_port }}"
+grafana_volume_list:
+  - "{{ grafana_pod_name }}-grafana_vol-data:/var/lib/grafana"
+grafana_env_dict: {}

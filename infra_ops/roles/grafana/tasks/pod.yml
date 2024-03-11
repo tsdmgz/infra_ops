@@ -1,0 +1,14 @@
+---
+
+- name: Create Grafana network
+  containers.podman.podman_network:
+    disable_dns: false
+    ipv6: "{{ grafana_network_ipv6 }}"
+    name: "{{ grafana_pod_name }}"
+    state: present
+
+- name: Create Grafana pod
+  containers.podman.podman_pod:
+    name: "{{ grafana_pod_name }}"
+    network: "{{ grafana_pod_name }}"
+    state: created

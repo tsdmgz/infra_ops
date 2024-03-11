@@ -1,0 +1,14 @@
+---
+- name: Deploy Grafana
+  containers.podman.podman_container:
+    name: "{{ grafana_pod_name }}-grafana"
+    image: "{{ grafana_image_url }}"
+    volume: "{{ grafana_volume_list | default(omit) }}"
+    ports: "{{ grafana_ports_list | default(omit) }}"
+    healthcheck: "{{ grafana_health_check | default(omit) }}"
+    pod: "{{ grafana_pod_name }}"
+    network: "{{ grafana_pod_name }}"
+    command: "{{ grafana_launch_command_list | default(omit) }}"
+    env: "{{ grafana_env_dict }}"
+    state: present
+

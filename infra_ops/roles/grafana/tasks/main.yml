@@ -1,0 +1,30 @@
+---
+# tasks file for grafana
+
+- ansible.builtin.include_tasks:
+    file: pod.yml
+    apply:
+      tags:
+        - role::grafana
+        - role::grafana:prepare
+  tags:
+    - role::grafana
+    - role::grafana:prepare
+- ansible.builtin.include_tasks:
+    file: grafana.yml
+    apply:
+      tags:
+        - role::grafana
+        - role::grafana:deploy
+  tags:
+    - role::grafana
+    - role::grafana:deploy
+- ansible.builtin.include_tasks:
+    file: post.yml
+    apply:
+      tags:
+        - role::grafana
+        - role::grafana:post
+  tags:
+    - role::grafana
+    - role::grafana:post
