@@ -1,0 +1,12 @@
+#jinja2: lstrip_blocks: True
+{%- for network in dns_resolver_unbound_access_control %}
+  {%- if network['tags'] is defined %}
+define-tag: "{{ network['tags'] | join(" ") }}"
+  {% endif -%}
+  {%- for netblock in network['netblocks'] -%}
+    {%- if network['tags'] is defined %}
+access-control-tag: {{ netblock }} "{{ network['tags'] | join(" ") }}"
+    {%- endif %}
+access-control: {{ netblock }} "{{ network['policy'] | default(dns_resolver_unbound_access_control_policy) }}"
+  {% endfor %}
+{% endfor -%}

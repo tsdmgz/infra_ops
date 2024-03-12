@@ -1,0 +1,14 @@
+---
+
+- name: Create dns_resolver network
+  containers.podman.podman_network:
+    disable_dns: true
+    ipv6: "{{ dns_resolver_network_ipv6 }}"
+    name: "{{ dns_resolver_pod_name }}"
+    state: present
+
+- name: Create dns_resolver pod
+  containers.podman.podman_pod:
+    network: "{{ dns_resolver_pod_name }}"
+    name: "{{ dns_resolver_pod_name }}"
+    state: created

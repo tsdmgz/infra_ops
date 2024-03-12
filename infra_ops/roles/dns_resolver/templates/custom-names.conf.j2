@@ -1,0 +1,11 @@
+{% if dns_resolver_unbound_local_data is defined and dns_resolver_unbound_local_data|length %}
+{% for local_data in dns_resolver_unbound_local_data %}
+local-data: '{{ local_data }}'
+{% endfor %}
+{% endif %}
+
+{% if dns_resolver_unbound_local_data_ptr is defined and dns_resolver_unbound_local_data_ptr|length %}
+{% for local_data_ptr in dns_resolver_unbound_local_data_ptr %}
+local-data-ptr: '{{ local_data_ptr }}'
+{% endfor %}
+{% endif %}

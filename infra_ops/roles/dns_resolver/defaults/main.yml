@@ -1,0 +1,56 @@
+---
+# defaults file for dns_resolvers
+# role variables
+dns_resolver_setype: container_file_t
+dns_resolver_serole: object_r
+dns_resolver_seuser: system_u
+dns_resolver_pod_name: dns_resolver
+dns_resolver_network_ipv6: true
+dns_resolver_volume_dir: "{{ dns_resolver_pod_name }}-unbound-volume-config"
+dns_resolver_volume_mounts:
+  - "{{ dns_resolver_volume_dir }}:/etc/unbound:z"
+
+# unbound specific variables
+dns_resolver_unbound_ports:
+  - "53:53/udp"
+  - "53:53/tcp"
+dns_resolver_unbound_env:
+  TZ: "Etc/UTC"
+dns_resolver_unbound_healthcheck: "nslookup example.com $(hostname -i)"
+dns_resolver_unbound_config_tree:
+  - local.d
+  - conf.d
+dns_resolver_unbound_config_templates:
+  - src: custom-names.conf.j2
+    dest: local.d/00-custom-names.conf
+  - src: resolve-network-acl.conf.j2
+    dest: local.d/99-resolve-network-acl.conf
+  - src: unbound.conf
+    dest: ./
+dns_resolver_unbound_access_control_policy: allow
+dns_resolver_unbound_access_control:
+  - netblocks:
+      - 10.0.0.0/8
+      - 172.16.0.0/12
+      - 192.168.0.0/16
+      - fd00::/8
+#   policy: allow_snoop
+#   Ideally, there is another script generating all the sites to block
+#   with tags
+#   tags:
+#     - malware
+#     - ads
+dns_resolver_unbound_dns64: false
+dns_resolver_unbound_dns64_prefix: "64:ff9b::/96"
+dns_resolver_unbound_modules:
+  dns64: "{{ dns_resolver_unbound_dns64 }}"
+  validator: true
+  iterator: true
+
+# unbound_exporter
+dns_resolver_unbound_exporter_ports:
+  - "9167:9167"
+dns_resolver_unbound_exporter_env:
+  UNBOUND_EXPORTER_HOST: "unix:///etc/unbound/unbound-control.sock"
+dns_resolver_unbound_exporter_image_url: "git.phmnl01.dmgznet.com/tsdmgz/unbound_exporter:latest"
+dns_resolver_unbound_exporter_healthcheck: "curl --fail http://localhost:9167 || exit 1"

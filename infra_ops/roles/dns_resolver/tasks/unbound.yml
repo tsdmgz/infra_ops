@@ -1,0 +1,39 @@
+---
+# create volume
+# deploy config
+# pull and create container
+
+- name: Create persistent data volumes
+  containers.podman.podman_volume:
+    name: "{{ dns_resolver_volume_dir }}"
+    state: present
+    recreate: false
+  register: container_volume_unbound
+
+- name: Create configuration tree
+  ansible.builtin.file:
+    path: "{{ container_volume_unbound['volume']['Mountpoint'] }}/{{ item }}"
+    state: directory
+    mode: "0700"
+  loop: "{{ dns_resolver_unbound_config_tree }}"
+  notify: Reload unbound
+
+- name: Template configuration files
+  ansible.builtin.template:
+    src: "{{ item['src'] }}"
+    dest: "{{ container_volume_unbound['volume']['Mountpoint'] }}/{{ item['dest'] }}"
+    mode: "0600"
+  loop: "{{ dns_resolver_unbound_config_templates }}"
+  notify: Reload unbound
+
+- name: Create unbound container
+  containers.podman.podman_container:
+    name: "{{ dns_resolver_pod_name }}-unbound"
+    image: docker.io/alpinelinux/unbound:latest
+    volumes: "{{ dns_resolver_volume_mounts }}"
+    ports: "{{ dns_resolver_unbound_ports }}"
+    env: "{{ dns_resolver_unbound_env }}"
+    healthcheck: "{{ dns_resolver_unbound_healthcheck }}"
+    pod: "{{ dns_resolver_pod_name }}"
+    network: "{{ dns_resolver_pod_name }}"
+    state: present

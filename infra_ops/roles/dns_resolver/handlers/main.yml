@@ -1,0 +1,17 @@
+---
+# handlers file for dns_resolvers
+
+- name: Wait for unbound socket creation
+  ansible.builtin.stat:
+    path: "{{ container_volume_unbound['volume']['Mountpoint'] }}/unbound-control.sock"
+  throttle: 1
+  listen: "Reload unbound"
+  retries: 3
+  delay: 5
+  register: dns_resolver_unbound_socket_result
+  until: dns_resolver_unbound_socket_result['stat']['exists']
+
+- name: Reload unbound
+  ansible.builtin.command: "podman exec {{ dns_resolver_pod_name }}-unbound sh -c 'unbound-checkconf && unbound-control reload_keep_cache'"
+  throttle: 1
+  listen: "Reload unbound"

@@ -1,0 +1,12 @@
+---
+- name: Create unbound_exporter
+  containers.podman.podman_container:
+    name: "{{ dns_resolver_pod_name }}-unbound_exporter"
+    image: "{{ dns_resolver_unbound_exporter_image_url }}"
+    pod: "{{ dns_resolver_pod_name }}"
+    ports: "{{ dns_resolver_unbound_exporter_ports }}"
+    volumes: "{{ dns_resolver_volume_mounts }}"
+    healthcheck: "{{ dns_resolver_unbound_exporter_healthcheck }}"
+    env: "{{ dns_resolver_unbound_exporter_env }}"
+    network: "{{ dns_resolver_pod_name }}"
+    state: present

@@ -1,0 +1,39 @@
+---
+# tasks file for dns_resolvers
+
+- include_tasks:
+    file: pod.yml
+    apply:
+      tags:
+        - role::dns_resolver
+        - role::dns_resolver:prepare
+  tags:
+    - role::dns_resolver
+    - role::dns_resolver:prepare
+- include_tasks:
+    file: unbound_exporter.yml
+    apply:
+      tags:
+        - role::dns_resolver
+        - role::dns_resolver:prepare
+  tags:
+    - role::dns_resolver
+    - role::dns_resolver:prepare
+- include_tasks:
+    file: unbound.yml
+    apply:
+      tags:
+        - role::dns_resolver
+        - role::dns_resolver:prepare
+  tags:
+    - role::dns_resolver
+    - role::dns_resolver:prepare
+- include_tasks:
+    file: post.yml
+    apply:
+      tags:
+        - role::dns_resolver
+        - role::dns_resolver:prepare
+  tags:
+    - role::dns_resolver
+    - role::dns_resolver:prepare

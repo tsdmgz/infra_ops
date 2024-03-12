@@ -1,0 +1,18 @@
+---
+
+- name: Generate systemd unit for dns_resolver pod and workers
+  containers.podman.podman_pod:
+    network: "{{ dns_resolver_pod_name }}"
+    name: "{{ dns_resolver_pod_name }}"
+    state: created
+    generate_systemd:
+      new: false
+      names: true
+      path: /etc/systemd/system
+
+- name: Run pod dns_resolver
+  ansible.builtin.systemd:
+    name: "pod-{{ dns_resolver_pod_name }}"
+    state: started
+    enabled: true
+    daemon_reload: true
