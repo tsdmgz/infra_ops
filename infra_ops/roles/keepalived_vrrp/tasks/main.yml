@@ -1,0 +1,30 @@
+---
+# tasks file for keepalived_vrrp
+
+- include_tasks:
+    file: pod.yml
+    apply:
+      tags:
+        - role::keepalived_vrrp
+        - role::keepalived_vrrp:prepare
+  tags:
+    - role::keepalived_vrrp
+    - role::keepalived_vrrp:prepare
+- include_tasks:
+    file: keepalived.yml
+    apply:
+      tags:
+        - role::keepalived_vrrp
+        - role::keepalived_vrrp:deploy
+  tags:
+    - role::keepalived_vrrp
+    - role::keepalived_vrrp:deploy
+- include_tasks:
+    file: post.yml
+    apply:
+      tags:
+        - role::keepalived_vrrp
+        - role::keepalived_vrrp:post
+  tags:
+    - role::keepalived_vrrp
+    - role::keepalived_vrrp:post

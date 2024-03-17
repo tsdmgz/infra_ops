@@ -1,0 +1,17 @@
+---
+
+- name: Create keepalived network
+  containers.podman.podman_network:
+    disable_dns: false
+    ipv6: "{{ keepalived_vrrp_network_ipv6 }}"
+    name: "{{ keepalived_vrrp_pod_name }}"
+    state: present
+
+- name: Create keepalived pod
+  containers.podman.podman_pod:
+    name: "{{ keepalived_vrrp_pod_name }}"
+    network: "{{ keepalived_vrrp_pod_name }}"
+    state: created
+
+- name: Check for firewalld
+  ansible.builtin.service_facts:

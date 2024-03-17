@@ -1,0 +1,35 @@
+---
+# defaults file for keepalived_vrrp
+__keepalived_vrrp_systemd_path: /etc/systemd/system
+keepalived_vrrp_pod_name: keepalived_vrrp
+keepalived_vrrp_network_ipv6: true
+keepalived_vrrp_image_url: git.phmnl01.dmgznet.com/tsdmgz/keepalived:latest
+keepalived_vrrp_env_dict: {}
+keepalived_vrrp_volume_list:
+  - "{{ keepalived_vrrp_pod_name }}-keepalived_vrrp_vol-data:/etc/keepalived:U"
+keepalived_vrrp_container_network: host
+keepalived_vrrp_setype: container_file_t
+keepalived_vrrp_serole: object_r
+keepalived_vrrp_seuser: system_u
+
+keepalived_vrrp_interface: eth0
+keepalived_vrrp_state: BACKUP
+keepalived_vrrp_virtual_router_id: 127
+keepalived_vrrp_priority: 100
+keepalived_vrrp_virtual_ip_address: "2001:db8:1:1::1"
+keepalived_vrrp_capabilities_list:
+  - NET_ADMIN
+  - NET_BROADCAST
+  - NET_RAW
+
+# This is a little lazy but works for now
+keepalived_vrrp_instances:
+  VI_1: |
+    interface {{ keepalived_vrrp_interface }}
+    state {{ keepalived_vrrp_state }}
+    virtual_router_id {{ keepalived_vrrp_virtual_router_id }}
+    priority {{ keepalived_vrrp_priority }}
+    virtual_ipaddress {
+      {{ keepalived_vrrp_virtual_ip_address }}
+    }
+keepalived_vrrp_script: {}

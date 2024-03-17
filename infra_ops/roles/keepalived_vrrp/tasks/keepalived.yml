@@ -1,0 +1,57 @@
+---
+
+- name: Create persistent data volumes
+  containers.podman.podman_volume:
+    name: "{{ keepalived_vrrp_volume_list[0] | ansible.builtin.split(':') | first }}"
+    state: present
+  register: keepalived_vrrp_data_volume_result
+
+- name: Configure keepalived
+  ansible.builtin.template:
+    src: keepalived.conf.j2
+    dest: "{{ keepalived_vrrp_data_volume_result['volume']['Mountpoint'] }}/keepalived.conf"
+    serole: "{{ keepalived_vrrp_serole }}"
+    setype: "{{ keepalived_vrrp_setype }}"
+    seuser: "{{ keepalived_vrrp_seuser }}"
+  notify: Reload keepalived_vrrp
+
+- name: Configure firewalld
+  ansible.posix.firewalld:
+    immediate: true
+    protocol: vrrp
+    state: enabled
+    zone: internal
+    permanent: true
+  when: "'firewalld.service' in ansible_facts['services']"
+
+- name: Create keepalived checker script directory
+  ansible.builtin.file:
+    state: directory
+    dest: "{{ keepalived_vrrp_data_volume_result['volume']['Mountpoint'] }}/checks/"
+    serole: "{{ keepalived_vrrp_serole }}"
+    setype: "{{ keepalived_vrrp_setype }}"
+    seuser: "{{ keepalived_vrrp_seuser }}"
+  notify: Reload keepalived_vrrp
+
+- name: Copy keepalived script checks
+  ansible.builtin.copy:
+    src: keepalived_vrrp/checks/
+    dest: "{{ keepalived_vrrp_data_volume_result['volume']['Mountpoint'] }}/checks/"
+    mode: "u=rx,g=rx,o=rx"
+    serole: "{{ keepalived_vrrp_serole }}"
+    setype: "{{ keepalived_vrrp_setype }}"
+    seuser: "{{ keepalived_vrrp_seuser }}"
+  notify: Reload keepalived_vrrp
+
+- name: Deploy keepalived
+  containers.podman.podman_container:
+    name: "{{ keepalived_vrrp_pod_name }}-keepalived_vrrp"
+    image: "{{ keepalived_vrrp_image_url }}"
+    volume: "{{ keepalived_vrrp_volume_list }}"
+    ports: "{{ keepalived_vrrp_ports_list | default(omit) }}"
+    healthcheck: "{{ keepalived_vrrp_health_check | default(omit) }}"
+    pod: "{{ keepalived_vrrp_pod_name }}"
+    network: "{{ keepalived_vrrp_container_network }}"
+    command: "{{ keepalived_vrrp_launch_command_list | default(omit) }}"
+    cap_add: "{{ keepalived_vrrp_capabilities_list }}"
+    state: present

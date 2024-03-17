@@ -1,0 +1,10 @@
+{% for vrrp_script in keepalived_vrrp_script.keys() %}
+vrrp_script {{ vrrp_script }} {
+  {{ keepalived_vrrp_script[vrrp_script] | indent(2, False) -}}
+}
+{% endfor %}
+{% for vrrp_instance in keepalived_vrrp_instances.keys() %}
+vrrp_instance {{ vrrp_instance }} {
+  {{ keepalived_vrrp_instances[vrrp_instance] | indent(2, False) -}}
+}
+{% endfor %}
