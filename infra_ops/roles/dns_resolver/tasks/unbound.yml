@@ -26,6 +26,14 @@
   loop: "{{ dns_resolver_unbound_config_templates }}"
   notify: Reload unbound
 
+- name: Allow bind to nonlocal IP
+  ansible.posix.sysctl:
+    name: "{{ item['key'] }}"
+    value: "{{ item['value'] }}"
+    state: present
+  loop: "{{ dns_resolver_vrrp_sysctl_list | dict2items }}"
+  when: dns_resolver_use_keepalived_vrrp
+
 - name: Create unbound container
   containers.podman.podman_container:
     name: "{{ dns_resolver_pod_name }}-unbound"

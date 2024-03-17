@@ -9,6 +9,10 @@ dns_resolver_network_ipv6: true
 dns_resolver_volume_dir: "{{ dns_resolver_pod_name }}-unbound-volume-config"
 dns_resolver_volume_mounts:
   - "{{ dns_resolver_volume_dir }}:/etc/unbound:z"
+dns_resolver_use_keepalived_vrrp: false
+dns_resolver_vrrp_sysctl_list:
+  net.ipv4.ip_nonlocal_bind: 1
+  net.ipv6.ip_nonlocal_bind: 1
 
 # unbound specific variables
 dns_resolver_unbound_ports:
