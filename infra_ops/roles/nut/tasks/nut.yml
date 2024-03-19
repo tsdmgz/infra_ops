@@ -11,3 +11,5 @@
     command: "{{ nut_launch_command_list | default(omit) }}"
     env: "{{ nut_env_dict }}"
     state: present
+    privileged: "{{ nut_perms_privileged }}"
+    device: "{{ nut_add_device_list }}"

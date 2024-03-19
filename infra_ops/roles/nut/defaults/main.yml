@@ -10,3 +10,6 @@ nut_image_url: docker.io/instantlinux/nut-upsd:latest
 nut_env_dict: {}
 nut_volume_list:
   - "/dev/bus/usb:/dev/bus/usb"
+nut_perms_privileged: False
+nut_add_device_list:
+  - /dev/ups:/dev/ups:rwm
