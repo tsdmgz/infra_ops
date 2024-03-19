@@ -20,6 +20,7 @@ blackbox_exporter_launch_command_list:
 blackbox_exporter_file_serole: object_r
 blackbox_exporter_file_seuser: system_u
 blackbox_exporter_file_setype: container_file_t
+blackbox_exporter_add_hosts_dict: {}
 
 blackbox_exporter_config_modules:
   http_2xx:
