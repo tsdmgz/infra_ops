@@ -1,0 +1,14 @@
+---
+# defaults file for networkmanager_vlan
+
+networkmanager_vlan_interfaces: []
+# - vlanid: 3
+#   vlandev: eth0
+#   conn_name: eth0.3
+#   state: present
+#   ip4:
+#     - "2001:db8:db8:ffff::1/64"
+#   method4: disabled
+#   ip6:
+#     - "192.0.2.1/24"
+#   method6: ignore

@@ -1,5 +1,8 @@
 ---
 
+- name: Get services
+  ansible.builtin.service_facts:
+
 - name: Create blackbox_exporter network
   containers.podman.podman_network:
     disable_dns: false
@@ -7,8 +10,23 @@
     name: "{{ blackbox_exporter_pod_name }}"
     state: present
 
+- name: Create additional networks for blackbox_exporter
+  containers.podman.podman_network: "{{ item }}"
+  loop: "{{ blackbox_exporter_network_extra_list }}"
+  when: blackbox_exporter_network_extra_list | length > 0
+
+- ansible.builtin.debug:
+    msg: "{{ blackbox_exporter_pod_name }}"
+
 - name: Create blackbox_exporter pod
   containers.podman.podman_pod:
     name: "{{ blackbox_exporter_pod_name }}"
     network: "{{ blackbox_exporter_pod_name }}"
     state: created
+
+- name: Enable netavark DHCP proxy
+  ansible.builtin.service:
+    name: netavark-dhcp-proxy.socket
+    state: started
+    enabled: true
+  when: "'netavark-dhcp-proxy.service' in ansible_facts['services']"

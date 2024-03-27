@@ -6,21 +6,37 @@ __blackbox_exporter_service_unit_container_prefix: container-
 __blackbox_exporter_service_unit_pod_prefix: pod-
 
 blackbox_exporter_pod_name: blackbox_exporter
+blackbox_exporter_instance_name: blackbox_exporter
 blackbox_exporter_network_ipv6: true
 blackbox_exporter_image_url: docker.io/prom/blackbox-exporter:latest
 blackbox_exporter_internal_listen_port: 9115
 blackbox_exporter_external_listen_port: "{{ blackbox_exporter_internal_listen_port }}"
 blackbox_exporter_volume_list:
-  - "{{ blackbox_exporter_pod_name }}-blackbox_exporter_vol-data:{{ __blackbox_exporter_config_dir }}:U"
+  - "{{ blackbox_exporter_pod_name }}-{{ blackbox_exporter_instance_name }}_vol-data:{{ __blackbox_exporter_config_dir }}:U"
 blackbox_exporter_ports_list:
   - "{{ blackbox_exporter_internal_listen_port }}:{{ blackbox_exporter_external_listen_port }}"
 blackbox_exporter_health_check: "wget -S -T 2 -O - http://localhost:{{ blackbox_exporter_internal_listen_port }}"
 blackbox_exporter_launch_command_list:
   - "--config.file={{ __blackbox_exporter_config_dir }}/blackbox_exporter.yml"
+  - "--web.listen-address=:{{ blackbox_exporter_internal_listen_port }}"
 blackbox_exporter_file_serole: object_r
 blackbox_exporter_file_seuser: system_u
 blackbox_exporter_file_setype: container_file_t
 blackbox_exporter_add_hosts_dict: {}
+blackbox_exporter_sysctl_dict: {}
+blackbox_exporter_cap_add_list: []
+
+blackbox_exporter_network_extra_list: []
+# https://docs.ansible.com/ansible/devel/reference_appendices/faq.html#when-is-it-unsafe-to-bulk-set-task-arguments-from-a-variable
+# This is a bulk set, follow containers.podman.podman_network options
+# - name: pbr_wan01
+#   driver: macvlan
+#   state: present
+
+#   This is not as elegant as I'd want it but it's a lot less messy
+blackbox_exporter_network_list:
+  - "{{ blackbox_exporter_pod_name }}"
+# - "pbr_wan01:mac={{ '54:52:00 | community.general.random_mac(seed=inventory_hostname~wan01) }},interface_name=wan01"
 
 blackbox_exporter_config_modules:
   http_2xx:

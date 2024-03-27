@@ -14,9 +14,11 @@
     ports: "{{ blackbox_exporter_ports_list }}"
     healthcheck: "{{ blackbox_exporter_health_check }}"
     pod: "{{ blackbox_exporter_pod_name }}"
-    network: "{{ blackbox_exporter_pod_name }}"
+    network: "{{ blackbox_exporter_network_list }}"
     command: "{{ blackbox_exporter_launch_command_list | default(omit) }}"
     add_hosts: "{{ blackbox_exporter_add_hosts_dict | default(omit) }}"
+    sysctl: "{{ blackbox_exporter_sysctl_dict }}"
+    cap_add: "{{ blackbox_exporter_cap_add_list }}"
     state: present
 
 - name: Deploy blackbox_exporter configuration
