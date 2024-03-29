@@ -17,28 +17,6 @@
     - rules
     - file_sd
 
-- name: Deploy Prometheus
-  containers.podman.podman_container:
-    name: "{{ prometheus_pod_name }}-prometheus"
-    image: "{{ prometheus_image_url }}"
-    volume: "{{ prometheus_volume_list }}"
-    ports: "{{ prometheus_ports_list }}"
-    healthcheck: "{{ prometheus_health_check }}"
-    pod: "{{ prometheus_pod_name }}"
-    network: "{{ prometheus_pod_name }}"
-    command: "{{ prometheus_launch_command_list | default(omit) }}"
-    state: present
-
-- name: Deploy Prometheus configuration
-  ansible.builtin.template:
-    src: prometheus.yml.j2
-    dest: "{{ prometheus_data_volume_result['volume']['Mountpoint'] }}/prometheus.yml"
-    serole: "{{ prometheus_file_serole }}"
-    seuser: "{{ prometheus_file_seuser }}"
-    setype: "{{ prometheus_file_setype }}"
-  notify:
-    - Reload Prometheus
-
 - name: Deploy static targets
   ansible.builtin.copy:
     content: "{{ item.value | to_nice_yaml(indent=2,sort_keys=False) }}"
@@ -73,3 +51,57 @@
   notify:
     - Reload Prometheus
 
+- name: Deploy Prometheus configuration
+  block:
+    - ansible.builtin.template:
+        src: prometheus.yml.j2
+        dest: "{{ prometheus_data_volume_result['volume']['Mountpoint'] }}/prometheus.yml"
+        serole: "{{ prometheus_file_serole }}"
+        seuser: "{{ prometheus_file_seuser }}"
+        setype: "{{ prometheus_file_setype }}"
+        backup: true
+      register: prometheus_updated_config
+      notify:
+        - Reload Prometheus
+
+    - name: Validate Prometheus config
+      containers.podman.podman_container:
+        name: "{{ prometheus_pod_name }}-prometheus-config-validate"
+        image: "{{ prometheus_image_url }}"
+        volume: "{{ prometheus_volume_list }}"
+        pod: "{{ prometheus_pod_name }}"
+        network: "{{ prometheus_pod_name }}"
+        entrypoint: promtool
+        command: "check config {{ __prometheus_config_dir }}/prometheus.yml"
+        detach: false
+        state: started
+        rm: true
+      when: prometheus_updated_config['changed']
+  rescue:
+    - name: Restore backup configuration
+      ansible.builtin.copy:
+        remote_src: true
+        src: "{{ prometheus_updated_config['backup_file'] }}"
+        dest: "{{ prometheus_data_volume_result['volume']['Mountpoint'] }}/prometheus.yml"
+      when:
+        - prometheus_updated_config['backup_file'] is defined
+  always:
+    - name: Clean up old config
+      ansible.builtin.file:
+        path: "{{ prometheus_updated_config['backup_file'] }}"
+        state: absent
+      when:
+        - prometheus_updated_config['changed']
+        - prometheus_updated_config['backup_file'] is defined
+
+- name: Deploy Prometheus
+  containers.podman.podman_container:
+    name: "{{ prometheus_pod_name }}-prometheus"
+    image: "{{ prometheus_image_url }}"
+    volume: "{{ prometheus_volume_list }}"
+    ports: "{{ prometheus_ports_list }}"
+    healthcheck: "{{ prometheus_health_check }}"
+    pod: "{{ prometheus_pod_name }}"
+    network: "{{ prometheus_pod_name }}"
+    command: "{{ prometheus_launch_command_list | default(omit) }}"
+    state: present

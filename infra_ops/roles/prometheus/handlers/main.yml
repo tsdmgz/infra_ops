@@ -2,8 +2,10 @@
 # handlers file for prometheus
 
 - name: Reload Prometheus
+  delegate_to: localhost
+  become: false
   ansible.builtin.uri:
     method: POST
-    url: "http://{{ ansible_default_ipv6['address'] | default(ansible_default_ipv4['address']) }}:{{ prometheus_external_listen_port }}/-/reload"
+    url: "http://{{ inventory_hostname }}:{{ prometheus_external_listen_port }}/-/reload"
   listen:
     - Reload Prometheus
