@@ -1,21 +1,11 @@
 ---
 # tasks file for networkmanager_vlan
+#
 
-- name: Get service list
-  ansible.builtin.service_facts:
-
-- name: Create NetworkManager managed VLAN interface
-  community.general.nmcli:
-    type: vlan
-    vlanid: "{{ item['vlanid'] }}"
-    vlandev: "{{ item['vlandev'] }}"
-    conn_name: "{{ item['conn_name'] }}"
-    method4: "{{ item['method4'] | default(omit) }}"
-    method6: "{{ item['method6'] | default(omit) }}"
-    ip4: "{{ item['ip4'] | default(omit) }}"
-    ip6: "{{ item['ip6'] | default(omit) }}"
-    state: "{{ item['state'] | default('present') }}"
-  loop: "{{ networkmanager_vlan_interfaces }}"
-  when:
-    - networkmanager_vlan_interfaces | length > 0
-    - ansible_facts['services']['NetworkManager.service']['state'] == 'running'
+- ansible.builtin.include_tasks:
+    file: networkmanager_vlan.yml
+    apply:
+      tags:
+        - role::networkmanager_vlan
+  tags:
+    - role::networkmanager_vlan

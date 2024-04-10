@@ -8,7 +8,7 @@
 
 - name: Deploy blackbox_exporter
   containers.podman.podman_container:
-    name: "{{ blackbox_exporter_pod_name }}-blackbox_exporter"
+    name: "{{ blackbox_exporter_pod_name }}-{{ blackbox_exporter_instance_name }}"
     image: "{{ blackbox_exporter_image_url }}"
     volume: "{{ blackbox_exporter_volume_list }}"
     ports: "{{ blackbox_exporter_ports_list }}"

@@ -15,9 +15,6 @@
   loop: "{{ blackbox_exporter_network_extra_list }}"
   when: blackbox_exporter_network_extra_list | length > 0
 
-- ansible.builtin.debug:
-    msg: "{{ blackbox_exporter_pod_name }}"
-
 - name: Create blackbox_exporter pod
   containers.podman.podman_pod:
     name: "{{ blackbox_exporter_pod_name }}"
