@@ -1,0 +1,28 @@
+---
+
+- name: Create opnsense_exporter secrets
+  containers.podman.podman_secret:
+    data: "{{ item['data'] }}"
+    name: "{{ item['name'] }}"
+    skip_existing: "{{ item['skip_existing'] | default(true) }}"
+    force: "{{ item['force'] | default(false) }}"
+    state: present
+  loop: "{{ opnsense_exporter_secrets_list }}"
+  no_log: true
+
+- name: Deploy opnsense_exporter
+  containers.podman.podman_container:
+    name: "{{ opnsense_exporter_pod_name }}-{{ opnsense_exporter_instance_name }}"
+    image: "{{ opnsense_exporter_image_url }}"
+    volume: "{{ opnsense_exporter_volume_list | default(omit) }}"
+    ports: "{{ opnsense_exporter_ports_list | default(omit) }}"
+    healthcheck: "{{ opnsense_exporter_health_check | default(omit) }}"
+    pod: "{{ opnsense_exporter_pod_name }}"
+    network: "{{ opnsense_exporter_network_list }}"
+    command: "{{ opnsense_exporter_launch_command_list | default(omit) }}"
+    add_hosts: "{{ opnsense_exporter_add_hosts_dict | default(omit) }}"
+    sysctl: "{{ opnsense_exporter_sysctl_dict | default(omit) }}"
+    cap_add: "{{ opnsense_exporter_cap_add_list | default(omit) }}"
+    secrets: "{{ opnsense_exporter_secrets_list | map(attribute='name') }}"
+    env: "{{ opnsense_exporter_env_dict }}"
+    state: present

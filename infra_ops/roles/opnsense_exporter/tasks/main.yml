@@ -1,0 +1,30 @@
+---
+# tasks file for opnsense-exporter
+
+- ansible.builtin.include_tasks:
+    file: pod.yml
+    apply:
+      tags:
+        - role::opnsense_exporter
+        - role::opnsense_exporter:prepare
+  tags:
+    - role::opnsense_exporter
+    - role::opnsense_exporter:prepare
+- ansible.builtin.include_tasks:
+    file: opnsense_exporter.yml
+    apply:
+      tags:
+        - role::opnsense_exporter
+        - role::opnsense_exporter:deploy
+  tags:
+    - role::opnsense_exporter
+    - role::opnsense_exporter:deploy
+- ansible.builtin.include_tasks:
+    file: post.yml
+    apply:
+      tags:
+        - role::opnsense_exporter
+        - role::opnsense_exporter:post
+  tags:
+    - role::opnsense_exporter
+    - role::opnsense_exporter:post
