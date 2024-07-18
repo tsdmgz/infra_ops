@@ -46,6 +46,9 @@ dns_resolver_unbound_access_control:
 #     - ads
 dns_resolver_unbound_dns64: false
 dns_resolver_unbound_dns64_prefix: "64:ff9b::/96"
+dns_resolver_unbound_doh: false
+dns_resolver_unbound_doh_key: key.pem
+dns_resolver_unbound_doh_pem: cert.pem
 dns_resolver_unbound_modules:
   dns64: "{{ dns_resolver_unbound_dns64 }}"
   validator: true

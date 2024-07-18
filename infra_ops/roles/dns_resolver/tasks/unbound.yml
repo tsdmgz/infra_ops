@@ -26,6 +26,21 @@
   loop: "{{ dns_resolver_unbound_config_templates }}"
   notify: Reload unbound
 
+- name: Generate private key
+  community.crypto.openssl_privatekey:
+    path: "{{ container_volume_unbound['volume']['Mountpoint'] }}/key.pem"
+  notify: Reload unbound
+  when: dns_resolver_unbound_doh
+
+- name: Generate TLS server certificates
+  community.crypto.x509_certificate:
+    path: "{{ container_volume_unbound['volume']['Mountpoint'] }}/cert.pem"
+    privatekey_path: "{{ container_volume_unbound['volume']['Mountpoint'] }}/key.pem"
+    provider: selfsigned
+    mode: "0600"
+  notify: Reload unbound
+  when: dns_resolver_unbound_doh
+
 - name: Allow bind to nonlocal IP
   ansible.posix.sysctl:
     name: "{{ item['key'] }}"
