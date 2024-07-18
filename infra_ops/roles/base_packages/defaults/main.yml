@@ -1,0 +1,48 @@
+---
+# defaults file for base_packages
+
+base_packages:
+  Rocky: &rpm
+    - rsync
+    - jq
+    - tcpdump
+    - sysstat
+    - strace
+    - lvm2
+    - cryptsetup
+    - usbutils
+    - iputils
+    - mtr
+    - iperf3
+    - python3-cryptography
+    - smartmontools
+    - tmux
+    - lm_sensors
+  Debian:
+    - rsync
+    - jq
+    - tcpdump
+    - sysstat
+    - strace
+    - lvm2
+    - cryptsetup
+    - usbutils
+    - mtr
+    - iperf3
+  openSUSE: &suse
+    - mtr
+    - iperf
+    - bind-utils
+    - strace
+    - sysstat
+    - tcpdump
+    - python311-rpm
+    - python311-selinux
+    - python3-policycoreutils
+    - policycoreutils-python-utils
+    - smartmontools
+    - tmux
+    - sensors
+  openSUSE MicroOS: *suse
+  openSUSE Tumbleweed: *suse
+  OracleLinux: *rpm

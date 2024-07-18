@@ -1,0 +1,9 @@
+---
+# tasks file for base_packages
+
+- name: Install base packages
+  ansible.builtin.package:
+    name: "{{ base_packages[ansible_facts['distribution']] }}"
+    state: present
+  tags:
+    - "role::base_packages"
